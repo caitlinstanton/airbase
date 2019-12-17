@@ -79,7 +79,7 @@
           <div class="resume-content mb-0">
             AirBass is an air bass guitar that allows the user
             to play distinct notes without the added weight and cost of an actual
-            bass guitar. It implement various sensors for input to output sound
+            bass guitar. It implements various sensors for input to output sound
             that is accurate both in terms of frequency and duration.
           </div>
         </div>
@@ -97,47 +97,44 @@
 
         <div class="resume-item d-flex flex-column flex-md-row justify-content-between mb-5">
           <div class="resume-content">
-            <h3 class="mb-0">Societal Impact</h3>
-            <p>Our plan for this project is mainly for entertainment purposes,
-              and is not dangerous. Nevertheless, we plan to build a user-friendly
+            <h3 class="mb-5">Social Impact</h3>
+            <p>Our plan for this project was mainly for entertainment purposes,
+              and is not dangerous. Nevertheless, we constructed a user-friendly
               playable instrument that is similar to a bass guitar. As far as we
-              know, this is a novel idea that we originated. We should be able
-              achieve this goal combining information discussed in previous labs
-              with our own ideas. Our plan for implementing this design is
-              described in detail in the next section.</p>
+              know, this is a novel idea that we originated. We were able to
+              achieve this goal by combining information discussed in previous
+              labs with our own ideas.</p>
 
-            <p>In theory, our design should be relatively inclusive for all
-              types of ability. This device is one that can be held like a
-              guitar, but can also be placed on a table or the floor to be
-              played, meaning that users who can’t hold objects for a long
-              time and/or in an upright position can also play. The use of a
-              glove fitted with flex sensors will make playing our air guitar
-              easier than that of a real guitar since the user does not need to
-              make full contact with the strings and their fingertips in order
-              to produce a sound. The major prerequisite for our user is that
-              they have at least one fully functional hand with a minimum of
-              four moveable digits (for each of the four fingers of the glove
-              that will be outfitted with flex sensors) and another limb/device
-              that they can control to make the “strumming” motion.</p>
+            <p>In theory, our design is relatively inclusive for all types of ability.
+              This device is one that can be held like a guitar, but can also be placed
+              on a table or the floor to be played, meaning that users who can’t hold
+              objects for a long time and/or in an upright position can also play.
+              The use of a glove fitted with flex sensors makes playing our air
+              bass easier than a real guitar since the user does not need to make
+              full contact with the strings and their fingertips in order to produce
+              a sound. Users still need to have two functioning hands so that they
+              can strum using the flex sensor glove with one and simulate fret
+              positioning with the other, but this is theoretically be easier
+              than literal plucking and holding down strings.</p>
 
-            <p>Color and identifying specific shapes/patterns don’t play much of
-              a role in our implementation, so those who have color blindness or
-              poor eyesight should have a similar experience as those with full
-              seeing ability. For full user experience, some hearing ability is
-              needed—this doesn’t help with interfacing with the device itself,
-              but improves the general functionality of our project as a way to
-              practice guitar without physically owning one. Being able to hear
-              the synthesized notes will enhance the user’s chances to
-              self-correct the placement of their fingers and the timing of their
-              strumming so as to play any melodies they choose.</p>
+            <p>Color and identifying specific shapes/patterns don’t play much of a
+              role in our implementation, so those who have color blindness or poor
+              eyesight should have a similar experience as those with full seeing ability.
+              For full user experience, some hearing ability is needed—this
+              doesn’t help with interfacing with the device itself, but improves
+              the general functionality of our project as a way to practice guitar
+              without physically owning one. Being able to hear the synthesized
+              notes enhances the user’s chances to self-correct the placement
+              of their fingers and the timing of their strumming so as to play
+              songs that they choose.</p>
 
           <p>Our project doesn’t involve any over-air communication, so there
-            are no specific IEEE or FCC standards that we must follow.
-            Additionally, our use of inputs and outputs that pose little to no
-            harm to the user imply that there aren’t any major ANSI, ISO, or
-            FDA standards that are applicable. Copyright claims will not be
-            much of a concern to our team, as the user will be responsible for
-            any melodies they create and how they wish to share them.</p>
+            are no specific IEEE or FCC standards that we must follow. Additionally,
+            our use of inputs and outputs that pose little to no harm to the user
+            imply that there aren’t any major ANSI, ISO, or FDA standards that are
+            applicable. Copyright claims are not much of a concern to our team,
+            as the user will be responsible for any melodies they create and how
+            they wish to share them.</p>
 
         </div>
       </div>
@@ -145,52 +142,52 @@
       <div class="resume-item d-flex flex-column flex-md-row justify-content-between">
         <div class="resume-content">
         <h3 class="mb-0">Implementation Overview</h3>
-        <p>The slab of wood would be used to mimic the neck of a bass guitar,
-          as shown in Figure 1 below. To synthesize the four individual strings,
-          we’d align four line sensors parallel to the length of the wood.
-          If a finger is placed on one of the “strings”, the line break
-          sensor would register this and it will narrow down the range of
-          potential frequencies of sound that we’d have to output. The fifth
-          line break sensor would be placed farther down on the slab,
-          oriented parallel to its length—this would help us add a “strumming”
-          functionality to trigger when the notes should actually be played,
-          so the user can practice rhythm in addition to playing in tune.</p>
+        <p>The slab of wood is used to mimic the neck of a bass guitar, as shown
+          in Figure 1 below. To synthesize the four individual strings, we aligned
+          four beam break sensors parallel to the length of the wood. If a finger
+          is placed on one of the “strings”, the line break sensor registers this
+          and it narrows down the range of potential frequencies of sound that
+          we’d have to output. Ultimately, nothing is played until one of the
+          strings are strummed by flexing a finger in the glove - then, a
+          frequency is output to the DAC with an envelope that starts and
+          stops depending on the reading from the flex sensor.</p>
 
-        <p>Line break sensors can only detect if an object has passed between
-          the pair, not the location of where the object broke the line.
-          Since the positioning of your fingers on each string of a guitar
-          is crucial to playing a certain note, we need to analyze what
-          finger is being placed on the “string” and at what fret.</p>
+          <img src="img/sensor_block_diagram.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+          <p style="text-align:center"><i><b>Figure 1: Diagram of sensor placement on the
+          neck of the AirBass</b></i></p>
 
-        <p>For the latter, to determine at which fret the user is playing,
-          we’d use an ultrasonic distance sensor. This sensor would be placed
-          at the end of the wood slab and would measure how far down the
-          next of the guitar the user’s hand is. This distance data would be
-          used to output which fret the user is playing at, based on the
-          length of the neck of a guitar and the typical placement of each
-          fret. This data, along with knowing which specific "line” was
-          broken, will further constrict the span of notes the user is
-          attempting to play.</p>
+        <p>Line break sensors can only detect if an object has passed between the pair,
+          not the location of where the object broke the line. Since the positioning
+          of your fingers on each string of a guitar is crucial to playing a certain
+          note, we need to analyze what finger is being placed on the “string”
+          and at what fret.</p>
 
-        <p>We’re using a black polyester glove with short flex sensors attached
-          to the inside of each finger, as shown in Figure 2. These sensors
-          have a resistance of ~10KΩ when at rest and up to ~20KΩ when flexed.
-          When the user bends a finger, we determine which finger is bent,
-          which line break sensor has been broken, and how far down the
-          neck the user’s hand is to determine which note is being played.
-          This will also serve as a kind of redundancy check, so that a note
-          will only be played both when the string/line is broken and when a
-          corresponding finger is bent.</p>
+        <p>For the latter, to determine at which fret the user is playing, we
+          used an ultrasonic distance sensor. This sensor is placed at the end
+          of the wood slab to measure how far down the next of the guitar the
+          user’s hand is. This distance data is used to decide which fret the
+          user is playing, based on the length of the neck of a guitar and the
+          typical placement of each fret. This data is used in part to determine
+          which frequency the user is attempting to play. Note that in our implementation,
+          for simplicity we assume that the user is playing a single note at a time
+          since we did not want to overcomplicate our logic.</p>
 
-        <p>Because the ultrasonic distance sensor can only measure the closest
-          finger to the sensor, the middle finger through pinky finger, if
-          flexed, will correspond to the next 3 frets adjacent to the index
-          finger.</p>
+        <p>For strumming, we use a black polyester glove with short flex sensors
+          attached to the inside of each finger, as shown in Figure 2. These
+          sensors have a resistance of ~30KΩ when at rest and up to ~100KΩ when
+          flexed. When the user bends a finger, we determine which finger is bent,
+          which line break sensor has been broken, and how far down the neck the
+          user’s hand is to determine which note is being played. This also serves
+          as a kind of redundancy check, so that a note is played both when the
+          string/line is broken and when a corresponding finger is bent.</p>
 
-        <p>Using either additive synthesis or FM modulation, we will produce
-          guitar-like sounds, similar to lab 1. We will use the DAC possibly
-          fortified/simplified using DMA, the audio jack, and the lab speakers
-          to play the music played by the user.</p>
+          <img src="img/glove_block_diagram.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+          <p style="text-align:center"><i><b>Figure 2: Diagram of flex sensor glove</b></i></p>
+
+        <p>Using additive synthesis, we produce approximately bass-like sounds,
+          similar to lab 1. We use the DAC, setting the output in an ISR that is
+          timed to accurately sample desired notes, the audio jack, and the lab
+          speakers to play the music the user requires.</p>
 
         </div>
       </div>
@@ -208,7 +205,7 @@
         on the strings being plucked but also the fingers placed on the frets.</p>
 
       <img src="img/fretboard_photo.jpeg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-      <p style="text-align:center"><i><b>Figure XXX: Typical fretboard of a bass guitar, with
+      <p style="text-align:center"><i><b>Figure 3: Typical fretboard of a bass guitar, with
       strings and fret annotated</b></i></p>
 
       <p>To determine which of the frets were being placed, we used a
@@ -230,11 +227,11 @@
         or spikes in current.</p>
 
         <img src="img/distance_positioning.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure XXX: Ultrasonic distance sensor
+        <p style="text-align:center"><i><b>Figure 4: Ultrasonic distance sensor
         placed alongside beam break sensors on final prototype</b></i></p>
 
-      <p>The implementation of this general process can be seen in the protothreads
-        function <code>protothreads_distance</code>. The trigger—which, when set,
+      <p>The implementation of this general process can be seen in the thread
+        <code>protothreads_distance</code>. The trigger—which, when set,
         would start the series of pulses to read the distance to an object—was
         connected to MCU pin RPA1, which had been enabled as an output. As
         long as the <code>define use_uart_serial</code> statement was commented
@@ -288,7 +285,7 @@
         additional arithmetic had to be performed to find the length of time
         between the 40kHz pulses and the reflected pulse.</p>
 
-      <p>Once the ISR read from the input capture pin, an infinite impulse
+      <p>Once the ISR read from the input capture pin, an finite impulse
         response filter was applied to make the value more reliably accurate,
         otherwise we noticed a large amount of fluctuation. The averaging was
         done over the four most recent input capture values, which were saved
@@ -308,7 +305,7 @@
         have a faster response.</p>
 
         <img src="img/echo_circuit.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure XXX: Our protoboarded echo pin
+        <p style="text-align:center"><i><b>Figure 5: Our protoboarded echo pin
         circuit</b></i></p>
 
       <p>Now that the distance reading was averaged, it had to be calibrated.
@@ -322,7 +319,112 @@
         The calibration data for this can be seen in the table below:</p>
 
       <table></table>
+      <p style="text-align:center"><i><b>Figure 6: Table of the final calibrated values
+      for the ultrasonic distance sensor, based on strings and frets</b></i></p>
 
+      <h3 class="mb-0">Flex Sensors</h3>
+
+      <p>In order to accurately determine when individual strings of our bass
+        are “plucked,” we used the <a href="https://www.sparkfun.com/products/10264">
+        SparkFun SEN-10264</a> two-inch flex sensors. At a high level, the idea
+        for implementing these sensors is that we could use the variable
+        resistance across the terminals in a voltage divider circuit, so that
+        the output voltage could be used to determine which of four strings is
+        being plucked (one string corresponding to each flex sensor). The result
+        is that we can accurately pluck open strings, start and stop playing
+        individual notes independent of the fret/finger position decided by
+        the beam breaks and distance sensor, as would be the case in a real
+        bass. To further liken the experience of our AirBass to an actual bass
+        guitar, we have the flex sensors attached to the inner palm of a glove
+        so that the integrated system can register moving a finger while wearing
+        the glove, and begin playing the desired note. The final setup is shown below.</p>
+
+      <img src="img/flex_sensor_setup.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+      <p style="text-align:center"><i><b>Figure 7: Final setup for flex sensor glove - pinky, ring, middle,
+         and pointer finger control plucking of the G, D, A, E strings, respectively.</b></i></p>
+
+      <p>To construct our voltage divider (to divide the supply Vcc = 3.3V when
+        flexing the device), we first measured the resistance of the flex sensors.
+         We found that they have an unflexed resistance of about 30K, which
+         approximately linearly increases to about 100K when fully flexed.
+         Noting these values, we decided to put the flex sensor in parallel to
+         the output and chose a series resistance Re = 50K to Vcc, since this
+         gives an output voltage that ranges between ~1.2V and ~2.2V, which is
+         appropriate for 3.3V level logic.</p>
+
+     <img src="img/flex_circuit_equation.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+     <p style="text-align:center"><i><b>Figure 8: Equation for the voltage divider used for reading
+       a varying output voltage from our flex sensor.</b></i></p>
+
+     <p>Next, we noticed that for our final implementation we only cared about a
+       true/false value answering the question “is string i being plucked?” for
+       each of the four strings i. Accordingly, we tried a few circuits to convert
+       this analog output voltage (ranging ~1.2V to ~2.2V) to a digital high or
+       low signal. Initially, we attempted to use the voltage divider output for
+       triggering an open drain FET (i.e. with the source grounded and the gate
+       this voltage divider output), since then we could easily pull the output
+       voltage up to the MCU’s power rail. We abandoned this approach for two
+       reasons: (1) the FET took relatively long to trigger and we saw an approximately
+       exponential rise time on the oscilloscope, which is no-nideal here since
+       we need a fast response to play the bass realistically, and (2) to avoid
+       any mechanical effects of the sensor and make it “easier” to pluck the
+       strings, we decided we needed some hysteresis in our trigger circuit so
+       that a user would have to intentionally unflex a finger to stop plucking
+       the string rather than this kind of event happening accidentally. Hence,
+       we used a Schmitt trigger.</p>
+
+    <img src="img/schmitt_circuit_equation.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+    <p style="text-align:center"><i><b>Figure 9: Equation for the Schmitt trigger,
+      specifically with resistance values R1 = 12K, R2 = 15K, R3 = 30K, RE = 50K.</b></i></p>
+
+    <p>As shown in Figure 8 and in the circuit schematic in Appendix C, the
+      output of our voltage divider is the input voltage
+      for an inverting Schmitt trigger, on the inverting terminal of the amplifier.
+      The resulting circuit, with resistance values as stated above, has a high
+      threshold of 2.1V and a low threshold of 1.5V. That is, when the output is
+      currently low (sitting at 0V) and the input (V-) to the inverting terminal
+      goes above 1.5V, the circuit triggers and brings the output to 3.3V. When
+      the output is currently high and the input goes below 2.1V, the circuit
+      triggers and brings the output to 0V. Since our voltage divider ranges over
+      values ~1.2V to ~2.2V, these thresholds are within our capabilities and we
+      effectively have an integrated circuit whose output will be digital high
+      when the sensor is flexed and low when it is not flexed (with some hysteresis).
+      For our final design, we have four of this circuit (one for each string/flex
+      sensor) and in practice, we saw that while this did work reasonably well,
+      for some of the sensors unflexing to go back below the high threshold was a
+      little difficult. Not all of the sensors have the same range of resistances,
+      and for one sensor in particular it was difficult to make the digital high
+      output go low again, while it worked like a charm for the others.</p>
+
+    <img src="img/flex_sensor_protoboard.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+    <p style="text-align:center"><i><b>Figure 8: Completed circuit used in demo, with four duplicated Schmitt
+      triggers near the top of the image.</b></i></p>
+
+    <p>To read these outputs, we used MCU pins Z4, Z5, Z6, and Z7 on the port expander.
+      Similar to reading the beam break inputs, in an SPI critical section we
+      read the current Z port into a local variable and outside this critical
+      section checked individual bits of the word to determine which flex sensors
+      were flexed and which were not. We set integers <code>e_pluck</code>,
+      <code>a_pluck</code>, <code>d_pluck</code>, and <code>g_pluck</code> to 0
+      or -1 depending on which bits of the word were high to indicate whether
+      or not a sensor was being flexed. Additionally, we have boolean state
+      variables <code>string_depressed</code> and <code>prev_string_depressed</code>
+      to indicate whether or not one of the four strings is currently being
+      plucked or was being plucked in the previous read to the Z port. Then,
+      if we transition from nothing plucked to some string being plucked,
+      we start timing a new note/amplitude envelope by setting <code>current_amplitude</code>
+      to 0 and curr_attack_time to 0 as well - in the audio ISR, this is handled
+      so that during an attack, the amplitude linearly increases to
+      <code>max_amplitude</code>. Similarly, if we transition from something
+      plucked to nothing being plucked, we set <code>current_amplitude</code> to
+      <code>max_amplitude</code> and <code>curr_decay_time</code> to 0 - this
+      initialization causes the ISR to linearly decrease the amplitude to 0 over a
+      full <code>decay_time</code>. The result of this logic, further explained
+      in the next section, gives the ability to play sustained notes with the
+      attack and decay part of the envelope so that it sounds less harsh and
+      ideally more like an actual bass.</p>
+
+      <h3 class="mb-0">Final Integration</h3>
       <p>These distance ranges were then used in a series of conditional statements
       to set the fret for each individual string being depressed: <code>e_fret</code>,
       <code>a_fret</code>, <code>d_fret</code>, and <code>g_fret</code>. If none
@@ -349,117 +451,6 @@
       cut down on the amount of accidental fret switching due to the ultrasonic
       distance sensor not being as precise as possible.</p>
 
-      <p>Although the distance sensor did perform as wanted, the calibration of the
-      sensor could’ve been improved. The majority of our work with the sensor was
-      finding the distance values at each fret and changing those values as we
-      recognized the natural way a user would hold our prototype. As mentioned
-      earlier, the human hand isn’t a flat, regular surface, so even tilting the
-      playing hand slightly would affect the distance reading. Although we tried
-      to alleviate this by extending the distance ranges for each fret, our final
-      prototype did experience slight toggling between note frequency when fingers
-      were placed on the boundary between two frets. A fix for this would’ve been
-      adding multiple distance sensors, perhaps one for each string (to accommodate
-      for the different readings at each string position) or a single one at the
-      other end of the neck of the guitar (for calibrating against the difference
-      of the two recorded values).</p>
-
-      <h3 class="mb-0">Flex Sensors</h3>
-
-      <p>In order to accurately determine when individual strings of our bass
-        are “plucked,” we used the <a href="https://www.sparkfun.com/products/10264">
-        SparkFun SEN-10264</a> two-inch flex sensors. At a high level, the idea
-        for implementing these sensors is that we could use the variable
-        resistance across the terminals in a voltage divider circuit, so that
-        the output voltage could be used to determine which of four strings is
-        being plucked (one string corresponding to each flex sensor). The result
-        is that we can accurately pluck open strings, start and stop playing
-        individual notes independent of the fret/finger position decided by
-        the beam breaks and distance sensor, as would be the case in a real
-        bass. To further liken the experience of our AirBass to an actual bass
-        guitar, we have the flex sensors attached to the inner palm of a glove
-        so that the integrated system can register moving a finger while wearing
-        the glove, and begin playing the desired note. The final setup is shown below.</p>
-
-      <img src="img/flex_sensor_setup.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-      <p style="text-align:center"><i><b>Figure XXX: Final setup for flex sensor glove - pinky, ring, middle,
-         and pointer finger control plucking of the G, D, A, E strings, respectively.</b></i></p>
-
-      <p>To construct our voltage divider (to divide the supply Vcc = 3.3V when
-        flexing the device), we first measured the resistance of the flex sensors.
-         We found that they have an unflexed resistance of about 30K, which
-         approximately linearly increases to about 100K when fully flexed.
-         Noting these values, we decided to put the flex sensor in parallel to
-         the output and chose a series resistance Re = 50K to Vcc, since this
-         gives an output voltage that ranges between ~1.2V and ~2.2V, which is
-         appropriate for 3.3V level logic.</p>
-
-     <p style="text-align:center"><i><b>Figure XXX: Voltage divider used for reading a varying output voltage
-       from our flex sensor.</b></i></p>
-
-     <p>Next, we noticed that for our final implementation we only cared about a
-       true/false value answering the question “is string i being plucked?” for
-       each of the four strings i. Accordingly, we tried a few circuits to convert
-       this analog output voltage (ranging ~1.2V to ~2.2V) to a digital high or
-       low signal. Initially, we attempted to use the voltage divider output for
-       triggering an open drain FET (i.e. with the source grounded and the gate
-       this voltage divider output), since then we could easily pull the output
-       voltage up to the MCU’s power rail. We abandoned this approach for two
-       reasons: (1) the FET took relatively long to trigger and we saw an approximately
-       exponential rise time on the oscilloscope, which is no-nideal here since
-       we need a fast response to play the bass realistically, and (2) to avoid
-       any mechanical effects of the sensor and make it “easier” to pluck the
-       strings, we decided we needed some hysteresis in our trigger circuit so
-       that a user would have to intentionally unflex a finger to stop plucking
-       the string rather than this kind of event happening accidentally. Hence,
-       we used a Schmitt trigger.</p>
-
-
-    <p>As shown in Figure XXXXX, the output of our voltage divider is the input voltage
-      for an inverting Schmitt trigger, on the inverting terminal of the amplifier.
-      The resulting circuit, with resistance values as stated above, has a high
-      threshold of 2.1V and a low threshold of 1.5V. That is, when the output is
-      currently low (sitting at 0V) and the input (V-) to the inverting terminal
-      goes above 1.5V, the circuit triggers and brings the output to 3.3V. When
-      the output is currently high and the input goes below 2.1V, the circuit
-      triggers and brings the output to 0V. Since our voltage divider ranges over
-      values ~1.2V to ~2.2V, these thresholds are within our capabilities and we
-      effectively have an integrated circuit whose output will be digital high
-      when the sensor is flexed and low when it is not flexed (with some hysteresis).
-      For our final design, we have four of this circuit (one for each string/flex
-      sensor) and in practice, we saw that while this did work reasonably well,
-      for some of the sensors unflexing to go back below the high threshold was a
-      little difficult. Not all of the sensors have the same range of resistances,
-      and for one sensor in particular it was difficult to make the digital high
-      output go low again, while it worked like a charm for the others.</p>
-
-    <img src="img/flex_sensor_protoboard.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-    <p style="text-align:center"><i><b>Figure XXX: Completed circuit used in demo, with four duplicated Schmitt
-      triggers near the top of the image.</b></i></p>
-
-    <p>To read these outputs, we used MCU pins Z4,Z5,Z6,Z7 on the port expander.
-      Similar to reading the beam break inputs, in an SPI critical section we
-      read the current Z port into a local variable and outside this critical
-      section checked individual bits of the word to determine which flex sensors
-      were flexed and which were not. We set integers <code>e_pluck</code>,
-      <code>a_pluck</code>, <code>d_pluck</code>, and <code>g_pluck</code> to 0
-      or -1 depending on which bits of the word were high to indicate whether
-      or not a sensor was being flexed. Additionally, we have boolean state
-      variables <code>string_depressed</code> and <code>prev_string_depressed</code>
-      to indicate whether or not one of the four strings is currently being
-      plucked or was being plucked in the previous read to the Z port. Then,
-      if we transition from nothing plucked to some string being plucked,
-      we start timing a new note/amplitude envelope by setting <code>current_amplitude</code>
-      to 0 and curr_attack_time to 0 as well - in the audio ISR, this is handled
-      so that during an attack, the amplitude linearly increases to
-      <code>max_amplitude</code>. Similarly, if we transition from something
-      plucked to nothing being plucked, we set <code>current_amplitude</code> to
-      <code>max_amplitude</code> and <code>curr_decay_time</code> to 0 - this
-      initialization causes the ISR to linearly decrease the amplitude to 0 over a
-      full <code>decay_time</code>. The result of this logic, further explained
-      in the next section, gives the ability to play sustained notes with the
-      attack and decay part of the envelope so that it sounds less harsh and
-      ideally more like an actual bass.</p>
-
     </div>
   </section>
 
@@ -479,6 +470,21 @@
     <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="conclusions">
       <div class="w-100">
         <h2 class="mb-5">Conclusions</h2>
+
+        <h3 class="mb-0">Ultrasonic Distance Sensor</h3>
+        <p>Although the distance sensor did perform as wanted, the calibration of the
+        sensor could’ve been improved. The majority of our work with the sensor was
+        finding the distance values at each fret and changing those values as we
+        recognized the natural way a user would hold our prototype. As mentioned
+        earlier, the human hand isn’t a flat, regular surface, so even tilting the
+        playing hand slightly would affect the distance reading. Although we tried
+        to alleviate this by extending the distance ranges for each fret, our final
+        prototype did experience slight toggling between note frequency when fingers
+        were placed on the boundary between two frets. A fix for this would’ve been
+        adding multiple distance sensors, perhaps one for each string (to accommodate
+        for the different readings at each string position) or a single one at the
+        other end of the neck of the guitar (for calibrating against the difference
+        of the two recorded values).</p>
         </div>
     </section>
 
@@ -498,6 +504,11 @@
         <p style="text-align:center"><i><b>Figure XXX: Low pass voltage divider on the
         echo pin of the ultrasonic distance sensor</b></i></p>
 
+        <img src="img/flex_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+        <p style="text-align:center"><i><b>Figure XXX: Voltage divider used for
+          reading a varying output voltage from our flex sensor.</b></i></p>
+
+        <img src="img/schmitt_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
         <p style="text-align:center"><i><b>Figure XXX: Full flex sensor, with MCP6242 amplifier, and resistance
           values R1 = 12K, R2 = 15K, R3 = 30K, RE = 50K.</b></i></p>
 
