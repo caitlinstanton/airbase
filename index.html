@@ -208,6 +208,8 @@
         on the strings being plucked but also the fingers placed on the frets.</p>
 
       <img src="img/fretboard_photo.jpeg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+      <p style="text-align:center"><i><b>Figure XXX: Typical fretboard of a bass guitar, with
+      strings and fret annotated</b></i></p>
 
       <p>To determine which of the frets were being placed, we used a
         <a href="https://www.sparkfun.com/products/15569">SparkFun SEN-15569</a>
@@ -226,6 +228,10 @@
         powered with a separate battery, a voltage regulator would be needed to
         keep the sensor powered at a steady 5V with no sharp increases in voltage
         or spikes in current.</p>
+
+        <img src="img/distance_positioning.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+        <p style="text-align:center"><i><b>Figure XXX: Ultrasonic distance sensor
+        placed alongside beam break sensors on final prototype</b></i></p>
 
       <p>The implementation of this general process can be seen in the protothreads
         function <code>protothreads_distance</code>. The trigger—which, when set,
@@ -300,6 +306,10 @@
         divider filter, as shown below. We made sure to use a ceramic capacitor
         as it has a faster internal frequency, and therefore our circuit would
         have a faster response.</p>
+
+        <img src="img/echo_circuit.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+        <p style="text-align:center"><i><b>Figure XXX: Our protoboarded echo pin
+        circuit</b></i></p>
 
       <p>Now that the distance reading was averaged, it had to be calibrated.
         After working with the distance sensor a bit, we noticed that the distance
@@ -401,13 +411,10 @@
        strings, we decided we needed some hysteresis in our trigger circuit so
        that a user would have to intentionally unflex a finger to stop plucking
        the string rather than this kind of event happening accidentally. Hence,
-       we used a Schmitt trigger which is shown below.</p>
+       we used a Schmitt trigger.</p>
 
 
-    <p style="text-align:center"><i><b>Figure XXX: Full flex sensor, with MCP6242 amplifier, and resistance
-      values R1 = 12K, R2 = 15K, R3 = 30K, RE = 50K.</b></i></p>
-
-    <p>As shown above, the output of our voltage divider is the input voltage
+    <p>As shown in Figure XXXXX, the output of our voltage divider is the input voltage
       for an inverting Schmitt trigger, on the inverting terminal of the amplifier.
       The resulting circuit, with resistance values as stated above, has a high
       threshold of 2.1V and a low threshold of 1.5V. That is, when the output is
@@ -461,6 +468,9 @@
     <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="results">
       <div class="w-100">
         <h2 class="mb-5">Results</h2>
+        <iframe style="display:block; margin-left:auto; margin-right:auto;" width="560" height="315" src="https://www.youtube.com/embed/XHtV47E0zYU" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <p style="text-align:center"><i><b>Our final demo!</b></i></p>
+
         </div>
     </section>
 
@@ -485,6 +495,11 @@
 
         <h3 class="mb-5">Appendix C</h3>
         <img src="img/distance_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+        <p style="text-align:center"><i><b>Figure XXX: Low pass voltage divider on the
+        echo pin of the ultrasonic distance sensor</b></i></p>
+
+        <p style="text-align:center"><i><b>Figure XXX: Full flex sensor, with MCP6242 amplifier, and resistance
+          values R1 = 12K, R2 = 15K, R3 = 30K, RE = 50K.</b></i></p>
 
         <h3 class="mb-5">Appendix D</h3>
         <table style="border: 1px solid black;">
