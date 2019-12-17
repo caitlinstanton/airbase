@@ -29,7 +29,7 @@
     <a class="navbar-brand js-scroll-trigger" href="#page-top">
       <span class="d-block d-lg-none">AirBass</span>
       <span class="d-none d-lg-block">
-        <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/profile.jpg" alt="">
+        <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/system_profile.jpg" alt="">
       </span>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,7 @@
   <div class="container-fluid p-0">
 
     <section class="resume-section p-3 p-lg-5 d-flex align-items-center" id="about">
-      <div class="w-100">
+      <div class="w-100" style="float:left;">
         <h1 class="mb-0">Air
           <span class="text-primary">Bass</span>
         </h1>
@@ -73,6 +73,7 @@
             <li>Jackson Kopitz (jsk363)</li>
           </ul>
         </div>
+
         <div class="mb-5">
           <h2 class="mb-5">Introduction</h2>
           <div class="resume-content mb-0">
@@ -82,6 +83,9 @@
             that is accurate both in terms of frequency and duration.
           </div>
         </div>
+      </div>
+      <div class="w-100" style="float:right">
+        <img class="img-fluid mx-auto mb-2" src="img/system_profile.jpg" alt="">
       </div>
     </section>
 
@@ -368,6 +372,7 @@
         so that the integrated system can register moving a finger while wearing
         the glove, and begin playing the desired note. The final setup is shown below.</p>
 
+      <img src="img/flex_sensor_setup.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
       <p><i>Figure XXX: Final setup for flex sensor glove - pinky, ring, middle,
          and pointer finger control plucking of the G, D, A, E strings, respectively.</i></p>
 
@@ -400,6 +405,7 @@
        the string rather than this kind of event happening accidentally. Hence,
        we used a Schmitt trigger which is shown below.</p>
 
+
     <p><i>Figure XXX: Full flex sensor, with MCP6242 amplifier, and resistance
       values R1 = 12K, R2 = 15K, R3 = 30K, RE = 50K.</i></p>
 
@@ -421,6 +427,7 @@
       and for one sensor in particular it was difficult to make the digital high
       output go low again, while it worked like a charm for the others.</p>
 
+    <img src="img/flex_sensor_protoboard.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
     <p><i>Figure XXX: Completed circuit used in demo, with four duplicated Schmitt
       triggers near the top of the image.</i></p>
 
