@@ -201,13 +201,70 @@
       <h2 class="mb-5">In-Depth Breakdown</h2>
 
       <h3 class="mb-0">Break Beam Sensors</h3>
+      <p>Our AirBass had four pairs of break beam sensors. These sensors are the
+        four strings on our guitar. Each pair of break beam sensors has both an
+        emitter and a receiver. The emitter sends an IR signal to the receiver
+        and the receiver sends a signal to the MCU whether it has received the
+        signal or not from the emitter. When the emitter and receiver are in line,
+        the receiver sends a low signal to the MCU. If they pair is not inline or
+        if something is blocking the signal, then the receiver sends a high signal
+        to the MCU. Our circuit is shown below in Appendix C. We use a 10kΩ pull
+        up resistor and a 1kΩ series resistor to protect the MCU to process the
+        output signal of the receiver. Both the emitters and the receivers were
+        powered by 3.3 V from the board.</p>
+
+      <p>We quickly realized that if all receivers were on one end of the guitar
+        with all emitters on the other end, there would be interference across
+        the pairs such that when we blocked any given receiver and emitter pair,
+        the receiver would still output receiving a signal because of the signals
+        from the other emitters. Each emitter and each receiver has a cone out of
+        about 10 degrees. To try and overcome this issue, we alternated the
+        emitters and receivers on each side of the guitar neck. This allowed there
+        to be more distance between the emitters on each side so that the receiver
+        would not be in the cone of an emitter that was not its designated pair.
+        This also did not work and there was still interference. The final idea
+        we had was to angle all of the beam break sensors to capitalize on the
+        cone of their signal transmission and reception. We angled the E and A
+        strings’ beam break sensors and the G and D strings’ beam break sensors
+        about 10 degrees away from each other so the edge of each of the emitter’s
+        cone is in the edge of the detection range of its receiver’s cone. Figure
+        3 shows a diagram of the beam break layout with directional arrows
+        indicating the IR beam and the cone, illustrating how the sensors do not
+        interfere with one another.</p>
+
+      <img src="img/beam_image.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+      <p style="text-align:center"><i><b>Figure 3: Block diagram showing the
+      alignment of emitter and receiver pairs, so as to reduce interference</b></i></p>
+
+      <p>We have a thread called <code>protothread_beam</code> to keep track which
+        of the beam break pairs are broken, and thus which one of the strings are
+        being pressed. This thread runs every 5 milliseconds, since no human finger
+        can move or shift faster than a few dozen Hz, let alone 200Hz. In this thread,
+        we first read from the port Y expander. To do this we enter an SPI critical
+        section, load the value of the port Y expander into <code>porty_val</code>,
+        and then exit the critical section. Next we have four checks. Each of the
+        checks is to determine if the beam is broken based on the bit sets within
+        <code>porty_val</code>. For the E string for example, we check if
+        <code>(porty_val & BIT_7) != 0x80)</code>. Since the E string receiver
+        sends the signal to pin RY7, we check if the 7th bit from the port expander
+        is low. If the bit is low, then we assign <code>e_string</code> to 0, meaning
+        that the beam is broken. If the signal was high, then we would assign
+        <code>e_string</code> to -1, indicating that the E string is not pressed.
+        We do this check for each of the four strings and assign <code>e_string</code>,
+        <code>a_string</code>, <code>d_string</code>,and <code>g_string</code>
+        to the appropriate values. Later in our code, we used the information if
+        the string is pressed to determine whether we should calculate at which
+        fret the user’s hand is placed. This is important because if the string
+        is not broken, then we do not need to calculate where the hand it since
+        an open string is being played.</p>
+
 
       <h3 class="mb-0">Ultrasonic Distance Sensor</h3>
       <p>On a guitar, the sound of the note being played changes not only based
         on the strings being plucked but also the fingers placed on the frets.</p>
 
       <img src="img/fretboard_photo.jpeg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-      <p style="text-align:center"><i><b>Figure 3: Typical fretboard of a bass guitar, with
+      <p style="text-align:center"><i><b>Figure 4: Typical fretboard of a bass guitar, with
       strings and fret annotated</b></i></p>
 
       <p>To determine which of the frets were being placed, we used a
@@ -229,7 +286,7 @@
         or spikes in current.</p>
 
         <img src="img/distance_positioning.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure 4: Ultrasonic distance sensor
+        <p style="text-align:center"><i><b>Figure 5: Ultrasonic distance sensor
         placed alongside beam break sensors on final prototype</b></i></p>
 
       <p>The implementation of this general process can be seen in the thread
@@ -307,7 +364,7 @@
         have a faster response.</p>
 
         <img src="img/echo_circuit.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure 5: Our protoboarded echo pin
+        <p style="text-align:center"><i><b>Figure 6: Our protoboarded echo pin
         circuit</b></i></p>
 
       <p>Now that the distance reading was averaged, it had to be calibrated.
@@ -395,7 +452,7 @@
       output go low again, while it worked like a charm for the others.</p>
 
     <img src="img/flex_sensor_protoboard.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-    <p style="text-align:center"><i><b>Figure 8: Completed circuit used in demo, with four duplicated Schmitt
+    <p style="text-align:center"><i><b>Figure 10: Completed circuit used in demo, with four duplicated Schmitt
       triggers near the top of the image.</b></i></p>
 
       <h3 class="mb-0">Final Integration</h3>
@@ -541,7 +598,133 @@
       <div class="w-100">
         <h2 class="mb-5">Results</h2>
         <iframe style="display:block; margin-left:auto; margin-right:auto;" width="560" height="315" src="https://www.youtube.com/embed/XHtV47E0zYU" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <p style="text-align:center"><i><b>Our final demo!</b></i></p>
+        <p style="text-align:center"><i><b>Figure 11: Our final demo!</b></i></p>
+
+        <p>As shown in our final demo video, we were able to put together a
+          functioning prototype for AirBass. It implemented the break beam,
+          ultrasonic distance, and flex sensors we set out to use at the start
+          of this six-week endeavor. Despite the output of each being fairly
+          simple, it took a lot of work to fully understand each of the sensors,
+          as well as what (if any) accompanying circuits were necessary. </p>
+
+        <p>The final result experienced no lag when producing a sound, whether
+          it was an open string (a plucked string with no finger placement breaking
+          a beam sensor) or a fingered note. The produced sounds matched the
+          expected frequency and amplitude, no matter the string/fret combination,
+          when checked on the oscilloscope.</p>
+
+        <p>One of the shortcomings we experienced was due to the calibration of
+          the distance sensor. If the user’s hand was tilted differently than
+          how it was when calibrating—reducing or increasing the amount and angle
+          of the surface area of the side of their hand—the distance measured
+          would change slightly. This slight change, depending on the distance
+          of the fret, would greatly affect which fret the program would detect
+          as being played. For example, as shown in the table below, the second
+          fret of the A string was at a distance value less than 140. If the
+          user’s finger was placed on the second fret but their hand was tilted
+          more towards the distance sensor than previously, the distance sensor
+          would see a pulse reflected back quicker, therefore reading a smaller
+          distance than expected. This could drop the distance down below 120,
+          playing on the first fret. If the user’s hand was tilted away from the
+          distance sensor, the third fret could be played instead.</p>
+
+          <table style="border: 1px solid black;">
+            <tr style="border: 1px solid black;">
+              <th style="border: 1px solid black;">Fret Number</th>
+              <th style="border: 1px solid black;">E</th>
+              <th style="border: 1px solid black;">A</th>
+              <th style="border: 1px solid black;">D</th>
+              <th style="border: 1px solid black;">G</th>
+            </tr>
+            <tr style="border: 1px solid black;">
+              <td style="border: 1px solid black;">1</td>
+              <td style="border: 1px solid black;">120</td>
+              <td style="border: 1px solid black;">120</td>
+              <td style="border: 1px solid black;">150</td>
+              <td style="border: 1px solid black;">180</td>
+            </tr>
+            <tr style="border: 1px solid black;">
+              <td style="border: 1px solid black;">2</td>
+              <td style="border: 1px solid black;">140</td>
+              <td style="border: 1px solid black;">140</td>
+              <td style="border: 1px solid black;">180</td>
+              <td style="border: 1px solid black;">200</td>
+            </tr>
+            <tr style="border: 1px solid black;">
+              <td style="border: 1px solid black;">3</td>
+              <td style="border: 1px solid black;">180</td>
+              <td style="border: 1px solid black;">170</td>
+              <td style="border: 1px solid black;">220</td>
+              <td style="border: 1px solid black;">240</td>
+            </tr>
+            <tr style="border: 1px solid black;">
+              <td style="border: 1px solid black;">4</td>
+              <td style="border: 1px solid black;">230</td>
+              <td style="border: 1px solid black;">200</td>
+              <td style="border: 1px solid black;">250</td>
+              <td style="border: 1px solid black;">260</td>
+            </tr>
+            <tr style="border: 1px solid black;">
+              <td style="border: 1px solid black;">5</td>
+              <td style="border: 1px solid black;">260</td>
+              <td style="border: 1px solid black;">240</td>
+              <td style="border: 1px solid black;">290</td>
+              <td style="border: 1px solid black;">320</td>
+            </tr>
+            <tr style="border: 1px solid black;">
+              <td style="border: 1px solid black;">6</td>
+              <td style="border: 1px solid black;">320</td>
+              <td style="border: 1px solid black;">270</td>
+              <td style="border: 1px solid black;">320</td>
+              <td style="border: 1px solid black;">350</td>
+            </tr>
+          </table>
+        <p style="text-align:center"><i><b>Figure 12: Table of the final calibrated values
+        for the ultrasonic distance sensor, based on strings and frets</b></i></p>
+
+        <p>This issue was reduced when the calibration was specified based on
+          the string, after we recognized that the positioning of the user’s hand
+          would change based on how far their fingers had to stretch to break
+          the appropriate beam. However, as discussion in Conclusions, there
+          could’ve been more hardware fixes made to further refine this aspect
+          of the project.</p>
+
+        <p>A second shortcoming was the flex sensor glove. Although it worked
+          correctly, outputting a low signal when a finger was fully flexed and
+          a high signal when unflexed, it required a lot of precise effort to
+          bend individual fingers without disturbing the others. If a finger
+          was accidentally flexed somewhat, that string’s sound could preempt
+          the intended note. On one hand, this is something every guitar player
+          needs to master in order to play the intended melody or riff, but on
+          the other, the glove could’ve been configured in a more beginner-friendly way.</p>
+
+        <p>The final shortcoming was the physical layout of the guitar itself.
+          Originally, we wanted to have eight frets on each string, laid out every
+          inch. We had to reduce this to six frets when we realized that there
+          wouldn’t be room for the user’s hand to play the seventh and eighth
+          frets, due to the proximity and size of the beam break sensors. If we
+          had more time, we’d reposition the beam breaks farther back, or perhaps
+          even nestled inside of the wood, so that there would be more room for
+          a player’s hand to comfortably reach all of the frets. Additionally,
+          the neck of the guitar was very wide and could make it somewhat difficult
+          to reach the farther strings, depending on the size and length of the
+          user’s hand. This dimension was necessary so that none of the break beam
+          receivers/emitters overlapped each other and detected a broken beam
+          incorrectly, but made for somewhat awkward playing. </p>
+
+        <p>Despite this, we ended up with a finished product that played the
+          correct notes for the intended duration. The prototype is safe, in
+          that all circuits and sensors are properly mounted and covered. The
+          sensors themselves don’t pose any danger to the user, so the main concern
+          was making sure that they were all securely fastened onto the board.
+          An ergonomic addition was the strap we made, after realizing that it
+          was inconvenient to expect the user to balance the wood plank on their
+          arm while also controlling the flex sensor glove. This made it easier
+          for the user to play sitting or standing.</p>
+
+          <img src="img/final_product.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+          <p style="text-align:center"><i><b>Figure 13: Our amateur bassist, Peter, with
+          the final version of AirBass.</b></i></p>
 
         </div>
     </section>
@@ -552,20 +735,116 @@
       <div class="w-100">
         <h2 class="mb-5">Conclusions</h2>
 
-        <h3 class="mb-0">Ultrasonic Distance Sensor</h3>
-        <p>Although the distance sensor did perform as wanted, the calibration of the
-        sensor could’ve been improved. The majority of our work with the sensor was
-        finding the distance values at each fret and changing those values as we
-        recognized the natural way a user would hold our prototype. As mentioned
-        earlier, the human hand isn’t a flat, regular surface, so even tilting the
-        playing hand slightly would affect the distance reading. Although we tried
-        to alleviate this by extending the distance ranges for each fret, our final
-        prototype did experience slight toggling between note frequency when fingers
-        were placed on the boundary between two frets. A fix for this would’ve been
-        adding multiple distance sensors, perhaps one for each string (to accommodate
-        for the different readings at each string position) or a single one at the
-        other end of the neck of the guitar (for calibrating against the difference
-        of the two recorded values).</p>
+        <h3 class="mb-0">Future Improvements</h3>
+        <p>Although the distance sensor did perform as wanted, the calibration of
+          the sensor could’ve been improved. The majority of our work with the
+          sensor was finding the distance values at each fret and changing those
+          values as we recognized the natural way a user would hold our prototype.
+          As mentioned earlier, the human hand isn’t a flat, regular surface, so
+          even tilting the playing hand slightly would affect the distance reading.
+          Although we tried to alleviate this by extending the distance ranges for
+          each fret, our final prototype did experience slight toggling between
+          note frequency when fingers were placed on the boundary between two frets.
+          A fix for this would’ve been adding multiple distance sensors, perhaps
+          one for each string (to accommodate for the different readings at each
+          string position) or a single one at the other end of the neck of the
+          guitar (for calibrating against the difference of the two recorded values).
+          Another fix would be to add a software median filter when reading the
+          distance from the sensor. In the case where the sensor is inconsistent,
+          not the user, a median filter would find the true distance the users
+          hand is placed better than our averaging filter because our averaging
+          filter cannot properly respond to incorrect spikes or valleys in the signal.</p>
+
+        <p>The flex sensor glove experienced hysteresis when flexing or unflexing
+          each finger, meaning that the user had to fully unflex a finger to un-pluck
+          it. This could’ve been remedied by adjusting the thresholds of the
+          Schmitt trigger so that a partially un-flexed finger would be enough to
+          drive the output high. Not only would this prevent the user from having
+          to strain their individual fingers, but it would also be more authentic
+          to the plucking motion of the glove. Additionally, moving the glove
+          sometimes caused the soldered circuits to pop out pins. This was because
+          the glove was connected directly to the glove with solid core wire. One
+          fix could be switching to stranded core wire, which is more pliable and
+          would put less stress on the soldering and header pins on our board and
+          additional circuits. Another (more complicated) fix would be replacing
+          the direct connection between the glove and the board with a wireless
+          connection, as the only messages needed to be transmitted from the flex
+          sensors are if they’re flexed or not. This would make AirBass even more
+          similar to an actual guitar by keeping the guitar and human relatively
+          separate.</p>
+
+        <p>For the physical layout of the sensors on the plank, the beam break
+          sensors could’ve been placed in a hollowed out section of the wood
+          (with the receivers and emitters were visible) and farther away from
+          the last fret. This would give the users enough wiggle room to comfortably
+          place their hand on the last few frets without stressing about the way
+          their hand faced the ultrasonic distance sensor or potentially knocking
+          over the beam break sensors.</p>
+
+        <p>An idea we toyed with at the beginning of the project was reducing
+          the number of emitters, since the outputted IR signal coned out and
+          could be received by more than one receiver by the time it reached
+          the other end of the neck of the guitar. Ultimately, we decided to go
+          with emitter-receiver pairs that were angled away from each other, but
+          reducing the number of emitters and still working with the angle of the
+          emitters/receivers may have enabled us to decrease the width of the
+          strings. This would let us shrink the width of the wooden plank and
+          make reaching the farther strings more possible, especially for those
+          players with disabilities or smaller and/or less nimble hands.</p>
+
+        <p>Lastly, although the harmonics used on <code>sine_table_harmonix</code>
+          produced a string-like sound, the difference between a real bass guitar
+          and AirBass could’ve been slimmed down even more. Implementing the
+          Karplus-Strong algorithm when producing our DAC output has been proven
+          in other projects to make a sound that could be mistaken for the
+          physical plucking of a string. This would’ve turned our synthetic
+          bass guitar sounds into notes with more of the richness and cadence
+          of a true bass guitar string.</p>
+
+        <h3 class="mb-0">Intellectual Property</h3>
+        <p>As far as we know, there are no intellectual property issues with our project.
+          We used public datasheets for the sensors, designed our own circuits, and
+          built off of code from our previous lab solutions. Though we did use
+          references and resources to check our hardware and software implementations,
+          nothing was directly copied without significant changes. We technically
+          reverse engineered a bass guitar, but didn’t copy any specific guitar
+          manufacturer’s layout or functionality with the implementation of AirBass.
+          Instead, we worked with the general concept of a bass guitar, which isn’t
+          covered by any patents or trademark issues.</p>
+
+        <p>A cursory search of the USPTO database doesn’t pull up a similar “air
+          guitar” design with the sensors and software algorithms used. Therefore,
+          there are patenting opportunities, if we so choose to pursue them. Our
+          project could also be publishable, especially if the aforementioned
+          modifications were made.</p>
+
+        <h3 class="mb-0">Ethics</h3>
+        <p>As a team, we fully complied with the IEEE Code of Ethics. We’ve tried
+          to design in as ethical and sustainable a way as possible, while also
+          avoiding conflicts of interest. When writing our proposal, we strove
+          to make realistic goals—these goals were ultimately achieved with our
+          final product. We’ve designed AirBass to not require any electrical or
+          software experience, so that the user doesn’t endanger themselves when
+          using our product. All resources used have been cited below in References,
+          as we wouldn’t have been able to finish our project to the degree that
+          we did without them. All team members and users of the product were
+          and are treated fairly, during both the construction and testing of
+          AirBass. Overall, this was an ethical pursuit, as defined by IEEE.</p>
+
+        <h3 class="mb-0">Safety and Legal Considerations</h3>
+        <p>There are no parts of AirBass that could physically or mentally injure
+          someone. All voltages are kept as low as possible and all wire/solder
+          connections are separated from the user, whether by electrical tape,
+          wood, and/or wool (not with a conductive material). The sound produced
+          by AirBass can be controlled in volume using the knob on the speaker,
+          so the user can ensure they don’t play too loudly. No images or lights
+          are used, so photosensitive or colorblind people won’t put themselves
+          at risk of using AirBass incorrectly.</p>
+
+        <p>No radiation, transmission, conductive surfaces, or automobiles are
+          involved in this product, nor any other hardware or software that is
+          overseen by regulations.</p>
+
         </div>
     </section>
 
@@ -573,27 +852,32 @@
       <div class="w-100">
         <h2 class="mb-5">Appendix</h2>
 
-        <h3 class="mb-5">Appendix A</h3>
+        <h3 class="mb-5">Appendix A - Approvals</h3>
         <p>The group approves this report for inclusion on the course website.</p>
         <p>The group approves the video for inclusion on the course youtube channel.</p>
 
-        <h3 class="mb-5">Appendix B</h3>
+        <h3 class="mb-5">Appendix B - Commented Code</h3>
         <script src="https://gist.github.com/caitlinstanton/bf1b71b87299e339299923079db807ba.js"></script>
 
-        <h3 class="mb-5">Appendix C</h3>
+        <h3 class="mb-5">Appendix C - Schematics</h3>
+
+        <img src="img/beam_break_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
+        <p style="text-align:center"><i><b>Figure 14: Circuit diagram for the beam break
+          sensors.</b></i></p>
+
         <img src="img/distance_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure XXX: Low pass voltage divider on the
+        <p style="text-align:center"><i><b>Figure 15: Low pass voltage divider on the
         echo pin of the ultrasonic distance sensor</b></i></p>
 
         <img src="img/flex_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure XXX: Voltage divider used for
+        <p style="text-align:center"><i><b>Figure 16: Voltage divider used for
           reading a varying output voltage from our flex sensor.</b></i></p>
 
         <img src="img/schmitt_circuit.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
-        <p style="text-align:center"><i><b>Figure XXX: Full flex sensor, with MCP6242 amplifier, and resistance
+        <p style="text-align:center"><i><b>Figure 17: Full flex sensor, with MCP6242 amplifier, and resistance
           values R1 = 12K, R2 = 15K, R3 = 30K, RE = 50K.</b></i></p>
 
-        <h3 class="mb-5">Appendix D</h3>
+        <h3 class="mb-5">Appendix D - Parts List</h3>
         <table style="border: 1px solid black;">
           <tr style="border: 1px solid black;">
             <th style="border: 1px solid black;">Part Name</th>
@@ -757,7 +1041,55 @@
           </tr>
         </table>
 
-        <h3 class="mb-5">Appendix E</h3>
+        <h3 class="mb-5">Appendix E - Work Breakdown</h3>
+        <h4 class="mb-0">Peter</h4>
+        <ul>
+          <li>Brainstorming implementations and writing preliminary software for
+            reading break beams, ultrasonic distance sensor, flex sensors</li>
+          <li>Positioning break beams to minimize interference and produce
+            reliable readings</li>
+          <li>Setting up state transitions for amplitude envelope, testing by
+            outputting and scoping this amplitude on a DAC channel</li>
+          <li>Implementing Schmitt Trigger, selecting appropriate resistances
+            and testing initial implementation</li>
+          <li>Soldering the four Schmitt Trigger circuits</li>
+          <li>General packaging for our final implementation: constructing flex
+            sensor glove, drawing lines for positioning of beam breaks, taping
+            down components, twisting wires, soldering connecting components &
+            audio low-pass filter, etc.</li>
+          <li>Calibrating thresholds for distance sensor in software for each string</li>
+        </ul>
+
+        <h4 class="mb-0">Caitlin</h4>
+        <ul>
+          <li>Brainstorming implementations and writing preliminary software for
+            reading break beams, ultrasonic distance sensor, flex sensors</li>
+          <li>Testing break beam sensors for reliability due to distance/angle
+            for the emitter and receiver pairs</li>
+          <li>Setting up and debugging state transitions for amplitude envelope,
+            testing by outputting and scoping this amplitude on a DAC channel</li>
+          <li>Implementing Schmitt Trigger, selecting appropriate resistances and
+            testing initial implementation</li>
+          <li>General packaging for our final implementation: constructing flex
+            sensor glove, drawing lines for positioning of beam breaks, taping
+            down components, twisting wires, soldering connecting components, etc.</li>
+          <li>Calibrating thresholds for distance sensor in software for each string</li>
+        </ul>
+
+        <h4 class="mb-0">Jackson</h4>
+        <ul>
+          <li>Brainstorming implementations and writing preliminary software for
+            reading break beams, ultrasonic distance sensor, flex sensors</li>
+          <li>Positioning break beams to minimize interference and produce reliable
+            readings</li>
+          <li>Worked on Implementing Schmitt Trigger by selecting appropriate
+            resistances and testing initial implementation</li>
+          <li>Soldering the beam break circuits on protoboards and laying out
+            components on the wood</li>
+          <li>Wrote the initial logic for the sensor array to determine which
+            note is played when</li>
+          <li>Calibrating thresholds for distance sensor in software for each string</li>
+        </ul>
 
         <h3 class="mb-5">References</h3>
         <ul>
