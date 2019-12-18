@@ -403,55 +403,138 @@
       triggers near the top of the image.</b></i></p>
 
       <h3 class="mb-0">Final Integration</h3>
-      <p>These distance ranges were then used in a series of conditional statements
-      to set the fret for each individual string being depressed: <code>e_fret</code>,
-      <code>a_fret</code>, <code>d_fret</code>, and <code>g_fret</code>. If none
-      of the four strings were depressed (meaning that zero of them had their
-      beam break broken), then all four fret variables were set to zero,
-      indicating an open string. If at least one of the four strings were
-      being depressed, then the fret variables were set if 1) that specific
-      string was depressed and 2) the distance sensor reading was within the range
-      for that fret. Since the farther frets would have larger distance readings,
-      those ranges were used in earlier if statements. The reasoning behind
-      this was that it was that a higher distance range was easier to achieve,
-      and so by putting these ranges earlier, it ensured that lower distance
-      readings wouldn’t accidentally be set to the wrong fret. For example,
-      on the E string, the first fret was expecting a distance reading of
-      less than 120—if the logic for setting the first fret came before the
-      logic for setting the second fret, then the second fret would be the
-      final (yet wrong) result.</p>
+      <p>All of the aforementioned sensors had their inputs and outputs combined
+        to produce a series of synthetic bass notes based on the user. Each thread
+        for the sensor set variables that were used to properly determine the
+        frequency of this sound, as well as when it occurred and for how long.</p>
 
-      <p>Cascading ranges (which checked to see if <code>distance</code> was less than the
-      calibration value) were used rather than constricted ranges (which checked
-      to see if <code>distance</code> was both greater than a calibration value and less
-      than another calibration value). This was because of the variation between
-      the boundaries of each fret. We felt that using cascading ranges would
-      cut down on the amount of accidental fret switching due to the ultrasonic
-      distance sensor not being as precise as possible.</p>
+      <p>Within <code>main()</code>,<code>timer2</code> was configured to interrupt
+        909 times a second (equal to 40MHz divided by our hardcoded sampling frequency,
+        44kHz). To make sure the big board would be outputting to the DAC pins, the
+        chip select was also set by making MCU pin RB4 an output. Then sine lookup
+        table was calculated. To do this, we first created a table of regular sine
+        values <code>sine_table</code>, to cover a complete cycle of a sine wave
+        with <code>sine_table_size</code> datapoints, and then created a new table
+        <code>sine_table_harmonix</code> also covering a complete cycle, adding
+        five harmonics with hardcoded weights to the original wave to produce a
+        more string-like sound. We found these weights on the DAC page of the
+        ECE 4760 website. Each value of sine_table_harmonix was then scaled to
+        be within the inclusive range of [-1,1], much like the original sine table
+        created earlier in the function. Lastly, the phase increment array
+        <code>ph_incr</code> was filled with frequency values that matched the
+        specific string/fret combinations of a bass guitar—this array contained
+        23 values, as each string had an open frequency and six frets, and each
+        string was separated by fifth (such that playing the fifth fret on a
+        string would produce a sound equivalent to the next open string).</p>
 
-      <p>The flex sensor outputs were read using MCU pins Z4,Z5,Z6,Z7 on the port expander. 
-        Similar to reading the beam break inputs, in an SPI critical section we
-        read the current Z port into a local variable and outside this critical
-        section checked individual bits of the word to determine which flex sensors
-        were flexed and which were not. We set integers <code>e_pluck</code>,
-        <code>a_pluck</code>, <code>d_pluck</code>, and <code>g_pluck</code> to 0
-        or -1 depending on which bits of the word were high to indicate whether
-        or not a sensor was being flexed. Additionally, we have boolean state
-        variables <code>string_depressed</code> and <code>prev_string_depressed</code>
-        to indicate whether or not one of the four strings is currently being
-        plucked or was being plucked in the previous read to the Z port. Then,
-        if we transition from nothing plucked to some string being plucked,
-        we start timing a new note/amplitude envelope by setting <code>current_amplitude</code>
-        to 0 and curr_attack_time to 0 as well - in the audio ISR, this is handled
-        so that during an attack, the amplitude linearly increases to
-        <code>max_amplitude</code>. Similarly, if we transition from something
-        plucked to nothing being plucked, we set <code>current_amplitude</code> to
-        <code>max_amplitude</code> and <code>curr_decay_time</code> to 0 - this
-        initialization causes the ISR to linearly decrease the amplitude to 0 over a
-        full <code>decay_time</code>. The result of this logic, further explained
-        in the next section, gives the ability to play sustained notes with the
-        attack and decay part of the envelope so that it sounds less harsh and
-        ideally more like an actual bass.</p>
+      <p>The DAC ISR, connected to <code>timer2</code>, was the final piece of
+        the puzzle. First it cleared the <code>timer2</code> interrupt flag.
+        Once that was done, conditional logic was used to determine the frequency,
+        from <code>ph_incr</code> and <code>sine_table_harmonix</code>, that would
+        be output to the DAC. First, it had to be seen if at least of the strings
+        had been “plucked”, as determined by the flex sensor glove.</p>
+
+      <p>The flex sensor outputs were read using MCU pins Z4,Z5,Z6,Z7 on the port
+        expander. In an SPI critical section we read the current Z port into a local
+        variable and outside this critical section checked individual bits of the
+        word to determine which flex sensors were flexed and which were not. We
+        set integers <code>e_pluck</code>, <code>a_pluck</code>, <code>d_pluck</code>,
+        <code>g_pluck</code> to 0 or -1 depending on which bits of the word were
+        high to indicate whether or not a sensor was being flexed.</p>
+
+      <p>If a string had been plucked, the phase variable for that specific string
+        (<code>e_phase</code>, <code>a_phase</code>, <code>d_phase</code>, <code>g_phase</code>)
+        was incremented. The value to increment each phase variable by was at
+        index 5i*i_fret within <code>ph_incr</code>, where the i in 5i corresponds
+        to each string represented as an integer (E = 0; A = 1; D = 2; and G = 3)
+        and the i in i_fret corresponds to each string (E, A, D, G). The reason
+        for the former definition of i is to nail down the fact that the strings
+        are separated by fourths within <code>ph_incr</code>, and therefore the
+        next open string frequency can be found at every fifth element of the table. The
+        latter definition stems from the readings from the ultrasonic distance sensor.</p>
+
+      <p>The distance ranges from the ultrasonic distance sensor were used in a
+        series of conditional statements to set the fret for each individual string
+        being depressed: <code>e_fret</code>, <code>a_fret</code>, <code>d_fret</code>,
+        and <code>g_fret</code>. If none of the four strings were depressed (meaning
+        that zero of them had their beam break broken), then all four fret variables
+        were set to zero, indicating an open string. If at least one of the four
+        strings were being depressed, then the fret variables were set if 1) that
+        specific string was depressed and 2) the distance sensor reading was within
+        the range for that fret. Since the farther frets would have larger distance
+        readings, those ranges were used in earlier if statements. The reasoning
+        behind this was that it was that a higher distance range was easier to a
+        chieve, and so by putting these ranges earlier, it ensured that lower
+        distance readings wouldn’t accidentally be set to the wrong fret. For
+        example, on the E string, the first fret was expecting a distance reading
+        of less than 120—if the logic for setting the first fret came before the
+        logic for setting the second fret, then the second fret would be the final
+        (yet wrong) result.</p>
+
+      <p>Cascading ranges (which checked to see if distance was less than the calibration
+        value) were used rather than constricted ranges (which checked to see if
+        distance was both greater than a calibration value and less than another
+        calibration value). This was because of the variation between the boundaries
+        of each fret. We felt that using cascading ranges would cut down on the amount
+        of accidental fret switching due to the ultrasonic distance sensor not being
+        as precise as possible.</p>
+
+      <p>The variable <code>sum_strings</code> was used to store the sine values
+        from <code>sine_table_harmonix</code>. Similar to the logic to find the
+        phase variable for each string, if a string had been plucked, <code>sum_strings</code>
+        was set to the value in <code>sine_table_harmonix</code> indexed at the
+        string’s phase variable (which had been shifted by 24 to prevent the
+        index from going out of bounds of the table).</p>
+
+      <p>Now that the frequency of the sound had been set, it was time to set the
+        amplitude envelope of the sound wave itself. This was also based on the
+        flex sensor glove output. Boolean state variables <code>string_depressed</code> and
+        <code>prev_string_depressed</code> indicated whether or not one of the four
+        strings is currently being plucked or was being plucked in the previous
+        read to the Z port. If we transitioned from nothing plucked to some string
+        being plucked, we started timing a new note/amplitude envelope by setting
+        <code>current_amplitude</code> to 0 and <code>curr_attack_time</code> to
+        0 as well. Similarly, if we transition from something plucked to nothing
+        being plucked, we set <code>current_amplitude</code> to <code>max_amplitude</code>
+        and <code>curr_decay_time</code> to 0.</p>
+
+      <p>In the audio ISR, even more conditional logic is used around <code>string_depressed</code>
+         and <code>prev_string_depressed</code>. If at least one string was
+         depressed and <code>curr_attack_time</code> had not reached its maximum,
+         this meant that the sine wave hadn’t reached its maximum amplitude, and
+         therefore <code>curr_attack_time</code> and <code>current_amplitude</code>
+         were increased accordingly. Otherwise, if the <code>curr_attack_time</code>
+         was at maximum value, the <code>current_amplitude</code> was set to
+         <code>max_amplitude</code> for redundancy. If no strings were depressed and
+         <code>curr_decay_time</code> had not reached its maximum, this meant that
+         the sine wave hadn’t reached its minimum amplitude, and therefore
+         <code>curr_decay_time</code> was incremented and <code>current_amplitude</code>
+         decremented. Otherwise, if the <code>curr_decay_time</code> was at maximum
+         value, <code>current_amplitude</code> was set to 0 (the minimum sine wave
+         amplitude) for redundancy. The attack portion of the sine wave increased
+         linearly, while the decay part of the sine wave decreased linearly. The
+         result of this logic gives the ability to play sustained notes with the
+         attack and decay part of the envelope so that it sounds less harsh and
+         ideally more like an actual bass.</p>
+
+      <p>The final result of AirBass was sent to MCU pin DAC_A, which was the sum of
+        2048 and the product of <code>current_amplitude</code> and <code>sum_strings</code>.
+        Since <code>sine_table_harmonix</code> is between the range of -1 and 1, so
+        is <code>sum_strings</code>. Multiplying this variable by <code>current_amplitude</code>
+        moves it to the range -208 to 2048. Adding 2048 further modifies this range
+        to 0 to 4096 so that the DAC can properly receive the sine wave.
+        This was then written to SPI to actual produce the sound, after which
+        the SPI was free to be used by either the port expander or the DAC.
+        To prevent any unwanted collisions on the combined use of SPI from the DAC
+        and the port expander, we made sure to use SPI critical sections wherever
+        needed and to limit the amount of code within them, so as to not take too
+        much time.</p>
+
+      <p>An audio jack was soldered from the output of DAC_A to be plugged into
+        a speaker so the user could hear the produced sound. There was minimal
+        crackling, so we added a low pass filter between DAC_A and the audio
+        jack to keep the sound as smooth and steady as played by the user.</p>
+
 
     </div>
   </section>
