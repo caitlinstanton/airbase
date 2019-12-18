@@ -200,7 +200,9 @@
     <div class="w-100">
       <h2 class="mb-5">In-Depth Breakdown</h2>
 
-      <h3 class="mb-0">Ultrasonic Distance Sensors</h3>
+      <h3 class="mb-0">Break Beam Sensors</h3>
+
+      <h3 class="mb-0">Ultrasonic Distance Sensor</h3>
       <p>On a guitar, the sound of the note being played changes not only based
         on the strings being plucked but also the fingers placed on the frets.</p>
 
@@ -400,30 +402,6 @@
     <p style="text-align:center"><i><b>Figure 8: Completed circuit used in demo, with four duplicated Schmitt
       triggers near the top of the image.</b></i></p>
 
-    <p>To read these outputs, we used MCU pins Z4, Z5, Z6, and Z7 on the port expander.
-      Similar to reading the beam break inputs, in an SPI critical section we
-      read the current Z port into a local variable and outside this critical
-      section checked individual bits of the word to determine which flex sensors
-      were flexed and which were not. We set integers <code>e_pluck</code>,
-      <code>a_pluck</code>, <code>d_pluck</code>, and <code>g_pluck</code> to 0
-      or -1 depending on which bits of the word were high to indicate whether
-      or not a sensor was being flexed. Additionally, we have boolean state
-      variables <code>string_depressed</code> and <code>prev_string_depressed</code>
-      to indicate whether or not one of the four strings is currently being
-      plucked or was being plucked in the previous read to the Z port. Then,
-      if we transition from nothing plucked to some string being plucked,
-      we start timing a new note/amplitude envelope by setting <code>current_amplitude</code>
-      to 0 and curr_attack_time to 0 as well - in the audio ISR, this is handled
-      so that during an attack, the amplitude linearly increases to
-      <code>max_amplitude</code>. Similarly, if we transition from something
-      plucked to nothing being plucked, we set <code>current_amplitude</code> to
-      <code>max_amplitude</code> and <code>curr_decay_time</code> to 0 - this
-      initialization causes the ISR to linearly decrease the amplitude to 0 over a
-      full <code>decay_time</code>. The result of this logic, further explained
-      in the next section, gives the ability to play sustained notes with the
-      attack and decay part of the envelope so that it sounds less harsh and
-      ideally more like an actual bass.</p>
-
       <h3 class="mb-0">Final Integration</h3>
       <p>These distance ranges were then used in a series of conditional statements
       to set the fret for each individual string being depressed: <code>e_fret</code>,
@@ -450,6 +428,30 @@
       the boundaries of each fret. We felt that using cascading ranges would
       cut down on the amount of accidental fret switching due to the ultrasonic
       distance sensor not being as precise as possible.</p>
+
+      <p>The flex sensor outputs were read using MCU pins Z4,Z5,Z6,Z7 on the port expander. 
+        Similar to reading the beam break inputs, in an SPI critical section we
+        read the current Z port into a local variable and outside this critical
+        section checked individual bits of the word to determine which flex sensors
+        were flexed and which were not. We set integers <code>e_pluck</code>,
+        <code>a_pluck</code>, <code>d_pluck</code>, and <code>g_pluck</code> to 0
+        or -1 depending on which bits of the word were high to indicate whether
+        or not a sensor was being flexed. Additionally, we have boolean state
+        variables <code>string_depressed</code> and <code>prev_string_depressed</code>
+        to indicate whether or not one of the four strings is currently being
+        plucked or was being plucked in the previous read to the Z port. Then,
+        if we transition from nothing plucked to some string being plucked,
+        we start timing a new note/amplitude envelope by setting <code>current_amplitude</code>
+        to 0 and curr_attack_time to 0 as well - in the audio ISR, this is handled
+        so that during an attack, the amplitude linearly increases to
+        <code>max_amplitude</code>. Similarly, if we transition from something
+        plucked to nothing being plucked, we set <code>current_amplitude</code> to
+        <code>max_amplitude</code> and <code>curr_decay_time</code> to 0 - this
+        initialization causes the ISR to linearly decrease the amplitude to 0 over a
+        full <code>decay_time</code>. The result of this logic, further explained
+        in the next section, gives the ability to play sustained notes with the
+        attack and decay part of the envelope so that it sounds less harsh and
+        ideally more like an actual bass.</p>
 
     </div>
   </section>
