@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>AirBass</title>
+  <title>AirBase</title>
 
   <!-- Bootstrap core CSS -->
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -27,7 +27,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
     <a class="navbar-brand js-scroll-trigger" href="#page-top">
-      <span class="d-block d-lg-none">AirBass</span>
+      <span class="d-block d-lg-none">AirBase</span>
       <span class="d-none d-lg-block">
         <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/system_profile.jpg" alt="">
       </span>
@@ -77,7 +77,7 @@
         <div class="mb-5">
           <h2 class="mb-5">Introduction</h2>
           <div class="resume-content mb-0">
-            AirBass is an air bass guitar that allows the user
+            AirBase is an air bass guitar that allows the user
             to play distinct notes without the added weight and cost of an actual
             bass guitar. It implements various sensors for input to output sound
             that is accurate both in terms of frequency and duration.
@@ -154,7 +154,7 @@
 
           <img src="img/sensor_block_diagram.png" alt="" style="display:block; margin-left:auto; margin-right:auto;">
           <p style="text-align:center"><i><b>Figure 1: Diagram of sensor placement on the
-          neck of the AirBass</b></i></p>
+          neck of the AirBase</b></i></p>
 
         <p>Line break sensors can only detect if an object has passed between the pair,
           not the location of where the object broke the line. Since the positioning
@@ -201,7 +201,7 @@
       <h2 class="mb-5">In-Depth Breakdown</h2>
 
       <h3 class="mb-0">Break Beam Sensors</h3>
-      <p>Our AirBass had four pairs of break beam sensors. These sensors are the
+      <p>Our AirBas had four pairs of break beam sensors. These sensors are the
         four strings on our guitar. Each pair of break beam sensors has both an
         emitter and a receiver. The emitter sends an IR signal to the receiver
         and the receiver sends a signal to the MCU whether it has received the
@@ -389,7 +389,7 @@
         is that we can accurately pluck open strings, start and stop playing
         individual notes independent of the fret/finger position decided by
         the beam breaks and distance sensor, as would be the case in a real
-        bass. To further liken the experience of our AirBass to an actual bass
+        bass. To further liken the experience of our AirBase to an actual bass
         guitar, we have the flex sensors attached to the inner palm of a glove
         so that the integrated system can register moving a finger while wearing
         the glove, and begin playing the desired note. The final setup is shown below.</p>
@@ -570,7 +570,7 @@
          attack and decay part of the envelope so that it sounds less harsh and
          ideally more like an actual bass.</p>
 
-      <p>The final result of AirBass was sent to MCU pin DAC_A, which was the sum of
+      <p>The final result of AirBase was sent to MCU pin DAC_A, which was the sum of
         2048 and the product of <code>current_amplitude</code> and <code>sum_strings</code>.
         Since <code>sine_table_harmonix</code> is between the range of -1 and 1, so
         is <code>sum_strings</code>. Multiplying this variable by <code>current_amplitude</code>
@@ -601,7 +601,7 @@
         <p style="text-align:center"><i><b>Figure 11: Our final demo!</b></i></p>
 
         <p>As shown in our final demo video, we were able to put together a
-          functioning prototype for AirBass. It implemented the break beam,
+          functioning prototype for AirBase. It implemented the break beam,
           ultrasonic distance, and flex sensors we set out to use at the start
           of this six-week endeavor. Despite the output of each being fairly
           simple, it took a lot of work to fully understand each of the sensors,
@@ -726,7 +726,7 @@
 
           <img src="img/final_product.jpg" alt="" style="display:block; margin-left:auto; margin-right:auto;">
           <p style="text-align:center"><i><b>Figure 13: Our amateur bassist, Peter, with
-          the final version of AirBass</b></i></p>
+          the final version of AirBase</b></i></p>
 
         </div>
     </section>
@@ -771,7 +771,7 @@
           additional circuits. Another (more complicated) fix would be replacing
           the direct connection between the glove and the board with a wireless
           connection, as the only messages needed to be transmitted from the flex
-          sensors are if they’re flexed or not. This would make AirBass even more
+          sensors are if they’re flexed or not. This would make AirBase even more
           similar to an actual guitar by keeping the guitar and human relatively
           separate.</p>
 
@@ -796,7 +796,7 @@
 
         <p>Lastly, although the harmonics used on <code>sine_table_harmonix</code>
           produced a string-like sound, the difference between a real bass guitar
-          and AirBass could’ve been slimmed down even more. Implementing the
+          and AirBase could’ve been slimmed down even more. Implementing the
           Karplus-Strong algorithm when producing our DAC output has been proven
           in other projects to make a sound that could be mistaken for the
           physical plucking of a string. This would’ve turned our synthetic
@@ -810,7 +810,7 @@
           references and resources to check our hardware and software implementations,
           nothing was directly copied without significant changes. We technically
           reverse engineered a bass guitar, but didn’t copy any specific guitar
-          manufacturer’s layout or functionality with the implementation of AirBass.
+          manufacturer’s layout or functionality with the implementation of AirBase.
           Instead, we worked with the general concept of a bass guitar, which isn’t
           covered by any patents or trademark issues.</p>
 
@@ -825,23 +825,23 @@
           to design in as ethical and sustainable a way as possible, while also
           avoiding conflicts of interest. When writing our proposal, we strove
           to make realistic goals—these goals were ultimately achieved with our
-          final product. We’ve designed AirBass to not require any electrical or
+          final product. We’ve designed AirBase to not require any electrical or
           software experience, so that the user doesn’t endanger themselves when
           using our product. All resources used have been cited below in References,
           as we wouldn’t have been able to finish our project to the degree that
           we did without them. All team members and users of the product were
           and are treated fairly, during both the construction and testing of
-          AirBass. Overall, this was an ethical pursuit, as defined by IEEE.</p>
+          AirBase. Overall, this was an ethical pursuit, as defined by IEEE.</p>
 
         <h3 class="mb-0">Safety and Legal Considerations</h3>
-        <p>There are no parts of AirBass that could physically or mentally injure
+        <p>There are no parts of AirBase that could physically or mentally injure
           someone. All voltages are kept as low as possible and all wire/solder
           connections are separated from the user, whether by electrical tape,
           wood, and/or wool (not with a conductive material). The sound produced
-          by AirBass can be controlled in volume using the knob on the speaker,
+          by AirBase can be controlled in volume using the knob on the speaker,
           so the user can ensure they don’t play too loudly. No images or lights
           are used, so photosensitive or colorblind people won’t put themselves
-          at risk of using AirBass incorrectly.</p>
+          at risk of using AirBase incorrectly.</p>
 
         <p>No radiation, transmission, conductive surfaces, or automobiles are
           involved in this product, nor any other hardware or software that is
